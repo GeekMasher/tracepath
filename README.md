@@ -7,7 +7,7 @@ You do not need to run this script if you have these things installed already.
 
 **Note:** If you haven't got the 'apt-get' package manager, then this will not work.
 
-Simply run the install.sh, this will install:
+**Packages that will install :**
  * python - To run the code (you most likely have this installed already)
  * traceroute - To the traceroute section of the code
  * python-pip - To install 3rd party python libs 
@@ -21,8 +21,7 @@ Simply run the install.sh, this will install:
  - ./trace.py 8.8.8.8
  - python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
 
-
-IPS used in example:
+**IPS used in example :**
  - 8.8.8.8 : Google DNS Server (USA)
  - 59.106.161.11 : University of Tokyo (JPN)
  - 130.102.131.70 : University of Queensland (AUS)
