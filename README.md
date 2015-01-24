@@ -17,8 +17,8 @@ Python-pip will install library's
 
 # Examples of commands:
 
-./trace.py 8.8.8.8
-python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
+ - ./trace.py 8.8.8.8
+ - python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
 
 
 IPS used in example:
