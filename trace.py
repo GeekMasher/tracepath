@@ -1,45 +1,44 @@
 #!/usr/bin/python
 
 import sys, os, socket, json, time
-import threading, requests, simplekml
+import requests, simplekml
 
 kml = simplekml.Kml()		# Create simple KML var
 
-
-def trace_traceroute(ip):			# traces IP
-	
-	if checker(ip) == False:		# check if it's a valide IP
-		error(0)			# error
-
-	print("[...] Tracing IP : " + ip)
-	
-	newIPs=[]			# list of new ips found along traceroute
-	st=os.popen("traceroute -I -n -w 0.5 " + ip)	# run the command 'traceroute 8.8.8.8'
-	for i in st.readlines():			# read each line of the traceroute command
-		ar=str(i).split("  ")				# split up vars
-		if len(ar) > 2:						# if it's a valide hop
-			hop=ar[0].replace(" ","")			# hop count 
-			routeIP=ar[1].split(" ")[0]			# ip address
-			newIPs.append(str(routeIP))			# add new IP to list
-
-	if len(newIPs) > 1:			#checks that there are IP's in the array
-		print("[...] IP's found: " + str(len(newIPs)))
-		geo(ip, newIPs)			# sends to next step
-	else:
-		error(2)				# when an error has occured
+#def trace_traceroute(ip):			# traces IP
+#	
+#	if checker(ip) == False:		# check if it's a valide IP
+#		error(0)			# error
+#
+#	print("[...] Tracing IP : " + ip)
+#	
+#	newIPs=[]			# list of new ips found along traceroute
+#	st=os.popen("traceroute -I -n -w 0.5 " + ip)	# run the command 'traceroute 8.8.8.8'
+#	for i in st.readlines():			# read each line of the traceroute command
+#		ar=str(i).split("  ")				# split up vars
+#		if len(ar) > 2:						# if it's a valide hop
+#			hop=ar[0].replace(" ","")			# hop count 
+#			routeIP=ar[1].split(" ")[0]			# ip address
+#			newIPs.append(str(routeIP))			# add new IP to list
+#
+#	if len(newIPs) > 1:			#checks that there are IP's in the array
+#		print("[...] IP's found: " + str(len(newIPs)))
+#		geo(ip, newIPs)			# sends to next step
+#	else:
+#		error(2)				# when an error has occured
 
 def trace_icmp(ip, port, protocol):
 	print("[...] Tracing IP : " + ip)
 
-	ips=[]
-	t=[0]
+	ips=[]		# list of new ips found along the path
+	t=[0]		# message in sent packet (bytearray form)
 	
 	dest_addr = socket.gethostbyname(ip)
 	max_hops = 30
 	icmp = socket.getprotobyname('icmp')
 	sock_type = socket.getprotobyname(protocol)
 
-	for ttl in range(1,30):
+	for ttl in range(1,30):		# loops a possible 30 times (max time-to-live var)
 		recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)				# setup socket type for recv.
 		send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, sock_type)		# setup socket type for send
 		send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)						# setup time-to-live var
@@ -63,7 +62,7 @@ def trace_icmp(ip, port, protocol):
 		
 		ttl += 1
 		if curr_addr == dest_addr:
-			break
+			break				# break loop when hit target
 
 
 	if len(ips) > 1:			#checks that there are IP's in the array
@@ -103,11 +102,11 @@ def exportToKML(ip, src, des, gl):
 	titl = ip 			# Title = ip
 	desc = "Trace from " + src + " to " + des 		# Description
 	
-	line = kml.newlinestring(name=titl, description=desc, coords=gl)
-	line.extrude = 1
+	line = kml.newlinestring(name=titl, description=desc, coords=gl)	# set vars for the lines
+	line.extrude = 1		# sends line around the planet (for Google Earth, no difference on maps)
 	line.tessellate = 1
-	line.style.linestyle.width = 5
-	line.style.linestyle.color = simplekml.Color.blue
+	line.style.linestyle.width = 5				# set line width
+	line.style.linestyle.color = simplekml.Color.blue	# set color of lines
 	# SimpleKML library supports lines
 	# http://simplekml.readthedocs.org/en/latest/gettingstarted.html#creating-a-linestring
 

@@ -9,7 +9,6 @@ You do not need to run this script if you have these things installed already.
 
 **Packages that will install :**
  * python - To run the code (you most likely have this installed already)
- * traceroute - To the traceroute section of the code
  * python-pip - To install 3rd party python libs 
 
 **Python-pip will install library's :**
@@ -18,15 +17,18 @@ You do not need to run this script if you have these things installed already.
 
 # Examples of commands:
 
- - ./trace.py 8.8.8.8
- - python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
+> ./trace.py 8.8.8.8
+> # when changed the permissions on the file (sudo chmod +x trace.py)
+>
+> python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
+> # The script uses arguments to maps out paths between each path
 
-**IPS used in example :**
+**IPS used in example and that are good for testing :**
  - 8.8.8.8 : Google DNS Server (USA)
  - 59.106.161.11 : University of Tokyo (JPN)
  - 130.102.131.70 : University of Queensland (AUS)
  - 200.89.76.16 : University of Chile (CHL)
 
 # Bugs
-
+- Make the code a little more robust and user friendly
 - Some server don't have the port (80, udp) open, so won't map correctly
