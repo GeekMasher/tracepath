@@ -29,6 +29,6 @@ You do not need to run this script if you have these things installed already.
  - 130.102.131.70 : University of Queensland (AUS)
  - 200.89.76.16 : University of Chile (CHL)
 
-# Bugs
+# Bugs and Fixes
 - Make the code a little more robust and user friendly
-- Some server don't have the port (80, udp) open, so won't map correctly
+- Some servers to be respond to a udp packet
