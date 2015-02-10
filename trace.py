@@ -11,14 +11,15 @@ def trace(ip):
 
 	ips=[]      # list of new ips found along the path
 	t=[0]       # message in sent packet (bytearray form)
-	
-	ports = [53, 123]
+	counter=0
+	ports = [33434, 53, 123]
 	dest_addr = socket.gethostbyname(ip)
 	max_hops = 30
 	icmp = socket.getprotobyname('icmp')
 
 	for ttl in range(1,30):     # loops a possible 30 times (max time-to-live var)
 		for port in ports:
+			counter += 1
 			sock_type = socket.getprotobyname('udp')
 
 			recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)              # setup socket type for recv.
@@ -26,7 +27,7 @@ def trace(ip):
 			send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)                       # setup time-to-live var
 
 			recv_socket.bind(('', port))        # Bind local socket to resivce packet
-			recv_socket.settimeout(0.1)         # Must be set to program doesn't freez
+			recv_socket.settimeout(0.2)         # Must be set to program doesn't freez
 			send_socket.sendto(bytearray(t), (ip, port))        # Send packets
 
 			curr_addr = None        # setup var
@@ -54,7 +55,8 @@ def trace(ip):
 		print("[...] Last IP : " + str(ips[len(ips)-1]))
 
 	if len(ips) > 1:            #checks that there are IP's in the array
-		print("[...] IP's found: " + str(len(ips)))
+		print("[...] Total Hops : " + str(counter))
+		print("[...] IP's found : " + str(len(ips)))
 		geo(ip, ips)            # sends to next step
 
 def geo(ip, ips):
