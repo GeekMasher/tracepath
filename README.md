@@ -17,11 +17,13 @@ You do not need to run this script if you have these things installed already.
 
 # Examples of commands:
 
-> ./trace.py 8.8.8.8
->> when changed the permissions on the file (sudo chmod +x trace.py)
+> ./trace.py --help
 >
-> python trace.py "8.8.8.8" "59.106.161.11" "130.102.131.70" "200.89.76.16"
->> The script uses arguments to maps out paths between each path
+> ./trace.py 8.8.8.8
+>
+> ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
+>
+> ./trace.py --ttl 80 -v 'google.com' 'github.com'
 
 **IPS used in example and that are good for testing :**
  - 8.8.8.8 : Google DNS Server (USA)
@@ -29,5 +31,10 @@ You do not need to run this script if you have these things installed already.
  - 130.102.131.70 : University of Queensland (AUS)
  - 200.89.76.16 : University of Chile (CHL)
 
+## Tested Envioments
+- Linux (Ubuntu)
+
 # Bugs and Fixes
+- Add more comments
+- More Debugging
 - Make the code a little more robust and user friendly
