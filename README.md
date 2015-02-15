@@ -31,4 +31,3 @@ You do not need to run this script if you have these things installed already.
 
 # Bugs and Fixes
 - Make the code a little more robust and user friendly
-- Some servers to be respond to a udp packet
