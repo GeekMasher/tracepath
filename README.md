@@ -1,5 +1,4 @@
 # Tracepath
-
 For one of my University projects, I was asked to create an application/script that could map the path from your local host to a server and plot the ip addresses it on a map (kml)
 
 # Installing
@@ -24,6 +23,8 @@ You do not need to run this script if you have these things installed already.
 > ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
 >
 > ./trace.py --ttl 80 -v 'google.com' 'github.com'
+>
+> ./trace.py -o /home/foobar/Desktop '8.8.8.8' '9.9.9.9'
 
 **IPS used in example and that are good for testing :**
  - 8.8.8.8 : Google DNS Server (USA)
@@ -35,6 +36,5 @@ You do not need to run this script if you have these things installed already.
 - Linux (Ubuntu)
 
 # Bugs and Fixes
-- Add more comments
 - More Debugging
 - Make the code a little more robust and user friendly

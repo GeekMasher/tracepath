@@ -8,80 +8,83 @@
 #
 #######################################################################################
 
+try:
 # Standard import
-import sys, os, socket, json, time, getopt
+    import sys, os, socket, json, time, argparse
 # Third-party imports (use Python-pip to insyall them)
-import requests
-import simplekml
-import argparse
-
+    import requests
+    import simplekml
+except:
+    print("[...] Error when Importing")
+    print("\nPlease Install :\n\t- requests\n\t- simplekml")
+    exit(2)
 
 kml = simplekml.Kml()		# Create simple KML var
 verbose=False			# Displays more data
-setTTL=30
-fileOutput=None
+setTTL=30                       # Time-To-Live var
+fileOutput=None                 # User file output var
 
 #######################################################################################
 #	> Trace function
 #		trace(DestIP)
 #######################################################################################
 def trace(ip):
-    ips=[]      # list of new ips found along the path
-    t=[0]       # message in sent packet (bytearray form)
-    counter=0
-    ports = [33434, 53, 123]	# Ports
-    curr_addr = None
+    ips=[]                                      # list of new ips found along the path
+    t=[0]                                       # message in sent packet (bytearray form)
+    counter=0                                   # counts the number of hops until the end
+    ports = [33434, 53, 123]	                # different ports to use
+    curr_addr = None                            # var to store the location of the current address
     dest_addr = socket.gethostbyname(ip)	# Last DestIP
     icmp = socket.getprotobyname('icmp')	# Return protocol
-    sock_type = socket.getprotobyname('udp')        # Sending protocol
+    sock_type = socket.getprotobyname('udp')    # Sending protocol
 
     print("[...] Tracing IP : " + dest_addr + " ("+ip+")")
 
-    for ttl in range(1,setTTL+1):     # loops a possible 30 times (max time-to-live var)
-        for port in ports:	# loops thought each port
+    for ttl in range(1,setTTL+1):               # loops a possible 30 times (max time-to-live var)
+        for port in ports:	                # loops thought each port
             counter += 1
 
-            recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)              # setup socket type for recv.
-            send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, sock_type)       # setup socket type for send
-            send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)                       # setup time-to-live var
+            recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)          # setup socket type for recv.
+            send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, sock_type)   # setup socket type for send
+            send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)                   # setup time-to-live var
             recv_socket.bind(('', port))        # Bind local socket to resivce packet
             recv_socket.settimeout(0.1)         # Must be set to program doesn't freez
             send_socket.sendto(bytearray(t), (ip, port))        # Send packets
 
             try:
-                _, curr_addr = recv_socket.recvfrom(512)        # Wait for reponce
-                curr_addr = curr_addr[0]        # Get the address
+                _, curr_addr = recv_socket.recvfrom(512)    # Wait for reponce
+                curr_addr = curr_addr[0]                    # Get the address
                 break
-            except socket.error:        # Error handling
+            except socket.error:                            # Error handling
                 pass
 
             send_socket.close()
-            recv_socket.close()     # Close sockets
+            recv_socket.close()                             # Close sockets
 
-        if curr_addr is not None:
-            ips.append((curr_addr, ttl))       # get the current address and save into the list
+        if curr_addr is not None:                           # Make sure that the hop has an address
+            ips.append((curr_addr, ttl))                    # get the current address and save into the list
             if verbose: print("[+++]\t"+str(ttl)+"\t"+str(curr_addr))	
         else:
             if verbose: print("[---]\t"+str(ttl)+"\t................")
         if str(curr_addr) == str(dest_addr):
-            break               # break loop when hit target
-        curr_addr = None
+            break                                           # break loop when hit target
+        curr_addr = None                                    # Set to none
 
-    print("")
+    print("")        # Spacing
     lnt = int(sum(len(x) for x in ips) / 2) - 1
-    rate = (counter / 100 * lnt)
-    if lnt >= 1:
-        if str(ip) != str(ips[lnt][0]):
-            print("[***] IP is never Reached")
-            print("[...] Last IP : " + str(ips[lnt][0]))
+    rate = (counter / 100 * lnt)                            # Calculate the percentage of droping
+    if lnt >= 1:                                            # Make sure that there are an amount of IPs
+        if str(ip) != str(ips[lnt][0]):                     # Check last hops to see if 
+            print("[***] IP is never Reached")              # Show that finally IP is not reached
+            print("[...] Last IP : " + str(ips[lnt][0]))    # Display last known IP
         else:
-            print("[...] Total Hops : " + str(counter))
-            print("[...] IP's found : " + str(ips[lnt][0]))
+            print("[...] Total Hops : " + str(counter))     # hops until target
+            print("[...] IP's found : " + str(ips[lnt][0])) # hop count
 
-        print("[...] Success Rate: "+str(rate)+"%")
-        geo(ip, ips)            # sends to next step
+        print("[...] Success Rate: "+str(rate)+"%")         # Print rate
+        geo(ip, ips)                                        # sends to next step
     else:
-        error(2)
+        error(2)                                            # Show error if no IPs in list
 
 #######################################################################################
 #	> Geolocation function;
@@ -89,50 +92,50 @@ def trace(ip):
 #######################################################################################
 def geo(ip, ips):
     print("[...] Finding Geolocations...")
-    gl = []                 # Store locations
+    gl = []                                                 # Store locations
 
-    url="http://ip-api.com/json/"       	# API link/url
+    url="http://ip-api.com/json/"       	            # API link/url
 
-    for i in ips:       	# for each ip in trace
-        if verbose: print("[...] > Requesting : " + url + i)
+    for i in ips:       	                            # for each ip in trace
+        if verbose: print("[...] > Requesting : " + url + i)# show the request
 
-        u=requests.get(url + i[0]) 			# request json string from API
+        u=requests.get(url + i[0]) 			    # request json string from API
 
-        if int(u.status_code) == 200:			# check if the request was a success
-            j=json.loads(str(u.text))       	# load json string
-            if j["status"] == "success":
+        if int(u.status_code) == 200:			    # check if the request was a success
+            j=json.loads(str(u.text))       	            # load json string
+            if j["status"] == "success":                    # check in the json file that 
                 details=(j["org"], j["city"], j["country"])
                 
                 gl.append((i[0], i[1], j["lon"], j["lat"], details))  # add 'ip, ttl, lat, lon, details'
 		
             else:
-                error(3)
+                error(3)                # display error 3
 
         if len(gl) > 0:     		# make sure that there is more than one location before continuing
-            exportToKML(ip, gl)     # sends to last step
+            exportToKML(ip, gl)         # sends to last step
         else:
-            error(3)		# display error 3
+            error(3)		        # display error 3
 
 #######################################################################################
 #	> Generate KML 
 #		exportToKML(DestIP, locations[[ip, ttl, lat, lon, details]])
 #######################################################################################
 def exportToKML(ip, locations):
-    file = ip.replace('.','') + ".kml"      # File string
+    file = ip.replace('.','') + ".kml"                  # File string
     listOfPoints=[]
 
-    for loc in locations:		# loops thought locations
-        pnt = kml.newpoint()	# creates new point
+    for loc in locations:		                # loops thought locations
+        pnt = kml.newpoint()	                        # creates new point
         pnt.name = str(loc[1]) + " : " + str(loc[2])	# add name for point
-        pnt.description = str(loc[4])		# add description
-        pnt.coords = [(loc[2], loc[3])]		# add coords
-        listOfPoints.append((loc[0], loc[1]))	# appends geo location to list
+        pnt.description = str(loc[4])		        # add description
+        pnt.coords = [(loc[2], loc[3])]		        # add coords
+        listOfPoints.append((loc[0], loc[1]))           # appends geo location to list
 
-    line = kml.newlinestring()    # set vars for the lines
-    line.coords = listOfPoints
-    line.extrude = 1        # sends line around the planet (for Google Earth, no difference on maps)
+    line = kml.newlinestring()                          # set vars for the lines
+    line.coords = listOfPoints                          # add the list of points as the lines
+    line.extrude = 1                                    # sends line around the planet
     line.tessellate = 1
-    line.style.linestyle.width = 5              # set line width
+    line.style.linestyle.width = 5                      # set line width
     line.style.linestyle.color = simplekml.Color.blue   # set color of lines
     # SimpleKML library supports lines
     # http://simplekml.readthedocs.org/en/latest/gettingstarted.html#creating-a-linestring
@@ -143,18 +146,18 @@ def exportToKML(ip, locations):
 #######################################################################################
 def saveFile():
     print("[...] Export to kml...")
-    dir=str(os.getcwd()+"/kml")         # Get current dir
-    if fileOutput == None:
-        file=str(time.time()).split('.')[0]+".kml"
+    dir=str(os.getcwd()+"/kml")                     # Get current dir
+    if fileOutput == None:                          # checks if the user has added custom file
+        file=str(time.time()).split('.')[0]+".kml"  # time stamped file
     else:
-        file=fileOutput
+        file=fileOutput                             # user file
 
-        if not os.path.exists(dir):         # Create folder 'kml' if it doesn't exist
-            os.makedirs(dir)
-        if not os.path.exists(dir+"/"+file):    # Create file if it doesn't exist
+        if not os.path.exists(dir):                 # Create folder 'kml' if it doesn't exist
+            os.makedirs(dir)                        # creates the dir
+        if not os.path.exists(dir+"/"+file):        # Create file if it doesn't exist
             f=open(dir+"/"+file,'w+')   
 
-        kml.save(dir+"/"+file)          # Save to a file
+        kml.save(dir+"/"+file)                      # Save to a file
 
         print("[...] Find KML at: "+dir+"/"+file)
 
@@ -203,36 +206,40 @@ def error(id):      # error list
 #######################################################################################
 def main():
     print("")
+    # Prameters
     parser = argparse.ArgumentParser(description="GeekMasher's Trace Script")
+    # Adds the Time-To-Life pram
     parser.add_argument("--ttl", help="Time-To-Live variable", action='count')
+    # Adds the verbose option
     parser.add_argument("-v", "--verbose", help="Displays extra data", action="store_true")
+    # Adds output file path
     parser.add_argument("-o", "--output", help="Output File location", type=argparse.FileType('w'))
+    # Adds all of the other prams
     parser.add_argument("ipaddress", help="List of IP addresses", nargs=argparse.REMAINDER)
-    opts = parser.parse_args()
+    opts = parser.parse_args()          # gets argv
 
-    if opts.verbose:
+    if opts.verbose:                    # if verbose is set
         global verbose
-        verbose = True
-    if opts.ttl is not None:
+        verbose = True                  # set to true
+    if opts.ttl is not None:            # If ttl is set
         global setTTL
-        setTTL = opts.ttl
-    if opts.output:	
+        setTTL = opts.ttl               # set ttl
+    if opts.output:                     # if output is set
         global fileOutput
-        fileOutput = opts.output
+        fileOutput = opts.output        # set output file
 
-    if not os.geteuid() == 0:
+    if not os.geteuid() == 0:           # check if the user is running as root
         sys.exit('\n[***] Script must be run as Root or Admin\n')
 	
-    for i in opts.ipaddress:       # Loop around each IP
-        if checker(i):
-            trace(str(i))      # start the trace
+    for i in opts.ipaddress:            # Loop around each IP
+        if checker(i):                  # Check argv to make sure its a IP / Domain Name
+            trace(str(i))               # start the trace
             print("[...] Finished with IP.")
             print(" ----------------------------------------")
         else:
             print("[***} "+str(i)+" is no a valid IP address")
-        saveFile()
+        saveFile()                      # Save the file
         print("[...] Ending process...")
 
-if __name__ == "__main__":
-    sys.exit(main())
-
+if __name__ == "__main__":              # Starting point
+    sys.exit(main())                    # Goto main
