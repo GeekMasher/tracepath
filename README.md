@@ -32,9 +32,9 @@ You do not need to run this script if you have these things installed already.
  - 130.102.131.70 : University of Queensland (AUS)
  - 200.89.76.16 : University of Chile (CHL)
 
-## Tested Envioments
+## Tested Environments
 - Linux (Ubuntu)
 
 # Bugs and Fixes
-- More Debugging
+- More Debugging and Error Checking Needed
 - Make the code a little more robust and user friendly
