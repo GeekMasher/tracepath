@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #######################################################################################
 #		
 #	Trace route script that allows the user to create a path to any IP
@@ -227,8 +227,9 @@ def main():
         global fileOutput
         fileOutput = opts.output        # set output file
 
-    if not os.geteuid() == 0:           # check if the user is running as root
-        sys.exit('\n[***] Script must be run as Root or Admin\n')
+    if sys.platform == "linux":
+        if not os.geteuid() == 0:           # check if the user is running as root
+            sys.exit('[***] Script must be run as Root or Admin\n')
 	
     for i in opts.ipaddress:            # Loop around each IP
         if checker(i):                  # Check argv to make sure its a IP / Domain Name

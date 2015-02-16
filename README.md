@@ -39,6 +39,9 @@ You do not need to run this script if you have these things installed already.
 - Linux
   - Ubuntu
   - Arch (3.18.6)
+- Windows
+  - Windows 7 (SP1)
+
 
 # Bugs and Fixes
 - More Debugging and Error Checking Needed
