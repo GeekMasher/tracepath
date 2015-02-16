@@ -31,9 +31,14 @@ You do not need to run this script if you have these things installed already.
  - 59.106.161.11 : University of Tokyo (JPN)
  - 130.102.131.70 : University of Queensland (AUS)
  - 200.89.76.16 : University of Chile (CHL)
+ - 188.44.50.103 : Moscow University (RUS)
+ - 163.200.81.116 : University of South Africa (ZAF)
+
 
 ## Tested Environments
-- Linux (Ubuntu)
+- Linux
+  - Ubuntu
+  - Arch (3.18.6)
 
 # Bugs and Fixes
 - More Debugging and Error Checking Needed

@@ -71,8 +71,9 @@ def trace(ip):
         curr_addr = None                                    # Set to none
 
     print("")        # Spacing
+
     lnt = int(sum(len(x) for x in ips) / 2) - 1
-    rate = (counter / 100 * lnt)                            # Calculate the percentage of droping
+   
     if lnt >= 1:                                            # Make sure that there are an amount of IPs
         if str(ip) != str(ips[lnt][0]):                     # Check last hops to see if 
             print("[***] IP is never Reached")              # Show that finally IP is not reached
@@ -81,7 +82,6 @@ def trace(ip):
             print("[...] Total Hops : " + str(counter))     # hops until target
             print("[...] IP's found : " + str(ips[lnt][0])) # hop count
 
-        print("[...] Success Rate: "+str(rate)+"%")         # Print rate
         geo(ip, ips)                                        # sends to next step
     else:
         error(2)                                            # Show error if no IPs in list
@@ -91,37 +91,35 @@ def trace(ip):
 #		geo(DestIP, ips[ip,ttl])
 #######################################################################################
 def geo(ip, ips):
-    print("[...] Finding Geolocations...")
+    print("\n[...] Finding Geolocations...")
     gl = []                                                 # Store locations
 
     url="http://ip-api.com/json/"       	            # API link/url
 
     for i in ips:       	                            # for each ip in trace
-        if verbose: print("[...] > Requesting : " + url + i)# show the request
+        for t in range(1,4):
+            u=requests.get(url + i[0]) 			    # request json string from API
 
-        u=requests.get(url + i[0]) 			    # request json string from API
+            if int(u.status_code) == 200:			    # check if the request was a success
+                j=json.loads(str(u.text))       	            # load json string
+                if j["status"] == "success":                    # check in the json file that 
+                    if verbose: print("[+++] > " + str(i[0]))# show the request
+                    details=(j["org"], j["city"], j["country"])
 
-        if int(u.status_code) == 200:			    # check if the request was a success
-            j=json.loads(str(u.text))       	            # load json string
-            if j["status"] == "success":                    # check in the json file that 
-                details=(j["org"], j["city"], j["country"])
-                
-                gl.append((i[0], i[1], j["lon"], j["lat"], details))  # add 'ip, ttl, lat, lon, details'
-		
+                    gl.append((i[0], i[1], j["lon"], j["lat"], details))  # add 'ip, ttl, lat, lon, details'
+                    break
             else:
-                error(3)                # display error 3
-
-        if len(gl) > 0:     		# make sure that there is more than one location before continuing
-            exportToKML(ip, gl)         # sends to last step
-        else:
-            error(3)		        # display error 3
+                print("[---] > " + str(i[0]))
+    if len(gl) > 0:     		# make sure that there is more than one location before continuing
+        exportToKML(ip, gl)         # sends to last step
+    else:
+        error(3)		        # display error 3
 
 #######################################################################################
 #	> Generate KML 
 #		exportToKML(DestIP, locations[[ip, ttl, lat, lon, details]])
 #######################################################################################
-def exportToKML(ip, locations):
-    file = ip.replace('.','') + ".kml"                  # File string
+def exportToKML(ip, locations):    
     listOfPoints=[]
 
     for loc in locations:		                # loops thought locations
@@ -223,6 +221,7 @@ def main():
         verbose = True                  # set to true
     if opts.ttl is not None:            # If ttl is set
         global setTTL
+        print("TTL : "+str(opts.ttl))
         setTTL = opts.ttl               # set ttl
     if opts.output:                     # if output is set
         global fileOutput
@@ -234,12 +233,12 @@ def main():
     for i in opts.ipaddress:            # Loop around each IP
         if checker(i):                  # Check argv to make sure its a IP / Domain Name
             trace(str(i))               # start the trace
-            print("[...] Finished with IP.")
+            print("\n[...] Finished with IP.")
             print(" ----------------------------------------")
         else:
             print("[***} "+str(i)+" is no a valid IP address")
-        saveFile()                      # Save the file
-        print("[...] Ending process...")
+    saveFile()                      # Save the file
+    print("[...] Ending process...")
 
 if __name__ == "__main__":              # Starting point
     sys.exit(main())                    # Goto main
