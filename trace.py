@@ -54,12 +54,13 @@ def trace(ip):
             try:
                 _, curr_addr = recv_socket.recvfrom(512)    # Wait for reponce
                 curr_addr = curr_addr[0]                    # Get the address
-                break
+                break                                       # Breaks when it gets an IP
+
             except socket.error:                            # Error handling
                 pass
-
-            send_socket.close()
-            recv_socket.close()                             # Close sockets
+        
+        send_socket.close()
+        recv_socket.close()                             # Close sockets
 
         if curr_addr is not None:                           # Make sure that the hop has an address
             ips.append((curr_addr, ttl))                    # get the current address and save into the list
@@ -227,7 +228,7 @@ def main():
         global fileOutput
         fileOutput = opts.output        # set output file
 
-    if sys.platform == "linux":
+    if sys.platform == "linux2":
         if not os.geteuid() == 0:           # check if the user is running as root
             sys.exit('[***] Script must be run as Root or Admin\n')
 	
