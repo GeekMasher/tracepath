@@ -36,12 +36,14 @@ You do not need to run this script if you have these things installed already.
 
 
 ## Tested Environments
+- Python
+  - 2.7.8
+  - 3.4.0
 - Linux
-  - Ubuntu
+  - Ubuntu (3.16.0)
   - Arch (3.18.6)
 - Windows
   - Windows 7 (SP1)
-
 
 # Bugs and Fixes
 - More Debugging and Error Checking Needed
