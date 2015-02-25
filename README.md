@@ -16,15 +16,13 @@ You do not need to run this script if you have these things installed already.
 
 # Examples of commands:
 
-> ./trace.py --help
+> # ./trace.py --help
 >
-> ./trace.py 8.8.8.8
+> # ./trace.py 8.8.8.8
 >
-> ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
+> # ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
 >
-> ./trace.py --ttl 80 -v 'google.com' 'github.com'
->
-> ./trace.py -o /home/foobar/Desktop '8.8.8.8' '9.9.9.9'
+> # ./trace.py --ttl 80 -v 'google.com' 'github.com'
 
 **IPS used in example and that are good for testing :**
  - 8.8.8.8 : Google DNS Server (USA)
@@ -34,12 +32,12 @@ You do not need to run this script if you have these things installed already.
  - 188.44.50.103 : Moscow University (RUS)
  - 163.200.81.116 : University of South Africa (ZAF)
 
-
-## Tested Environments
+## Working Test Environments
 - Python
   - 2.7.8
   - 3.4.0
 - Linux
+  - Mint (3.13.0)
   - Ubuntu (3.16.0)
   - Arch (3.18.6)
 - Windows
@@ -47,4 +45,4 @@ You do not need to run this script if you have these things installed already.
 
 # Bugs and Fixes
 - More Debugging and Error Checking Needed
-- Make the code a little more robust and user friendly
+- Make the code a little more robust and user friend
