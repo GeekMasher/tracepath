@@ -16,13 +16,13 @@ You do not need to run this script if you have these things installed already.
 
 # Examples of commands:
 
-> # ./trace.py --help
+> ./trace.py --help
 >
-> # ./trace.py 8.8.8.8
+> ./trace.py 8.8.8.8
 >
-> # ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
+> ./trace.py '8.8.8.8' '59.106.161.11' '130.102.131.70' '200.89.76.16'
 >
-> # ./trace.py --ttl 80 -v 'google.com' 'github.com'
+> ./trace.py --ttl 80 -v 'google.com' 'github.com'
 
 **IPS used in example and that are good for testing :**
  - 8.8.8.8 : Google DNS Server (USA)
