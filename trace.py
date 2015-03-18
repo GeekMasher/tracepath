@@ -32,51 +32,49 @@ def trace(ip):
     ips=[]                                      # list of new ips found along the path
     t=[0]                                       # message in sent packet (bytearray form)
     counter=0                                   # counts the number of hops until the end
-    ports = [33434, 53, 123]	                # different ports to use
-    curr_addr = None                            # var to store the location of the current address
+    addrPos=''                                  # Current IP
+    port = 33434        	                # port thats use
     dest_addr = socket.gethostbyname(ip)	# Last DestIP
-    icmp = socket.getprotobyname('icmp')	# Return protocol
-    sock_type = socket.getprotobyname('udp')    # Sending protocol
 
     print("[...] Tracing IP : " + dest_addr + " ("+ip+")")
 
     for ttl in range(1,setTTL+1):               # loops a possible 30 times (max time-to-live var)
-        for port in ports:	                # loops thought each port
-            counter += 1
+        counter += 1
 
-            recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)          # setup socket type for recv.
-            send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, sock_type)   # setup socket type for send
-            send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)                   # setup time-to-live var
-            recv_socket.bind(('', port))        # Bind local socket to resivce packet
-            recv_socket.settimeout(0.1)         # Must be set to program doesn't freez
-            send_socket.sendto(bytearray(t), (ip, port))        # Send packets
+        # setup socket type for recv.
+        recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname('icmp'))
+        # setup socket type for send
+        send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.getprotobyname('udp'))
+        # setup time-to-live var 
+        send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
 
-            try:
-                _, curr_addr = recv_socket.recvfrom(512)    # Wait for reponce
-                curr_addr = curr_addr[0]                    # Get the address
-                break                                       # Breaks when it gets an IP
+        recv_socket.bind(('', port))                        # Bind local socket to resivce packet
+        recv_socket.settimeout(0.1)                         # Must be set to program doesn't freez
+        send_socket.sendto(bytearray(t), (dest_addr, port))        # Send packets
 
-            except socket.error:                            # Error handling
-                pass
-        
-        send_socket.close()
-        recv_socket.close()                             # Close sockets
+        try:
+            _, curr_addr = recv_socket.recvfrom(512)    # Wait for reponce
+            addrPos = str(curr_addr[0])
 
-        if curr_addr is not None:                           # Make sure that the hop has an address
-            ips.append((curr_addr, ttl))                    # get the current address and save into the list
-            if verbose: print("[+++]\t"+str(ttl)+"\t"+str(curr_addr))	
-        else:
+            if addrPos is not None:
+                ips.append((addrPos, ttl))                    # get the current address and save into the list
+                if verbose: print("[+++]\t"+str(ttl)+"\t"+str(addrPos))
+
+        except socket.error:                    # Error handling
             if verbose: print("[---]\t"+str(ttl)+"\t................")
-        if str(curr_addr) == str(dest_addr):
-            break                                           # break loop when hit target
-        curr_addr = None                                    # Set to none
+        finally:        
+            send_socket.close()
+            recv_socket.close()                 # Close sockets
+            addrPos=None                        # reset address position
 
-    print("")        # Spacing
+        if addrPos == str(dest_addr):
+            break                               # break loop when hit target
+    print("")                                   # Spacing
 
     lnt = int(sum(len(x) for x in ips) / 2) - 1
    
     if lnt >= 1:                                            # Make sure that there are an amount of IPs
-        if str(ip) != str(ips[lnt][0]):                     # Check last hops to see if 
+        if str(dest_addr) != str(ips[lnt][0]):                     # Check last hops to see if 
             print("[***] IP is never Reached")              # Show that finally IP is not reached
             print("[...] Last IP : " + str(ips[lnt][0]))    # Display last known IP
         else:
