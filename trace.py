@@ -278,9 +278,9 @@ def main():
     if opts.verbose:                    # if verbose is set
         global verbose
         verbose = True                  # set to true
-    if opts.ttl is not None:            # If ttl is set
-        global setTTL
-        setTTL = opts.ttl               # set ttl
+    # if opts.ttl is not None:            # If ttl is set
+    #     global setTTL
+    #     setTTL = opts.ttl               # set ttl
     if opts.output:                     # if output is set
         global fileOutput
         fileOutput = opts.output        # set output file
