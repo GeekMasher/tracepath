@@ -208,10 +208,14 @@ def exportToKML(ip, locations, nullNodes):
 #######################################################################################
 def saveFile(ip=None):
     print("[...] Export to kml...")
+    slash = "/"
+    if sys.platform == "win32":
+        slash = "\\"
+    
     if fileOutput == None and ip == None:                          # checks if the user has added custom file
-        file= os.getcwd() + "/" + str(time.time()).split('.')[0] + ".kml"  # time stamped file
+        file= os.getcwd() + slash + str(time.time()).split('.')[0] + ".kml"  # time stamped file
     elif fileOutput == None:
-        file= os.getcwd() + "/" + str(ip) + ".kml"  # time stamped file
+        file= os.getcwd() + slash + str(ip) + ".kml"  # time stamped file
     else:
         file=fileOutput                             # user file
 
@@ -267,21 +271,26 @@ def error(id):      # error list
 #######################################################################################
 def execFile(fileKML):
     if sys.platform == "linux2":
-        if os.path.isfile("/usr/bin/marble"):
-            os.system("/usr/bin/marble "+fileKML+" 2> /dev/null")
-        else:
-            print("[***] Program not found...")
+        exe = ["/usr/bin/marble"]
 
+        for e in exe:
+            try:
+                os.system(e + " " + fileKML + " 2> /dev/null")
+                break
+            except:
+                pass
+                  
     elif sys.platform == "win32":
-        exe = "C:\\Program Files\\Marble 0.8.0\\marble.exe "
-        if os.path.isfile(exe):
-            os.system(exe + fileKML)
-        else:
-            print("[***] Program not found...")
-    elif sys.platform == "darwin":
-        print("[***] System not supported...")
+        exe = ["C:\\Marble\\MarblePortable.exe", "C:\\Program Files\\Marble 0.8.0\\marble.exe", "C:\\Program Files\\Marble\\marble-qt.exe", "C:\\Program Files\\NASA\\World Wind 1.4\\WorldWind.exe"]
+
+        for e in exe:
+            try:
+                os.system(e+' "'+fileKML+'"')
+                break
+            except:
+                pass
     else:
-        print("[***] Unknown OS")
+        print("[***] System not supported...")
 
 #######################################################################################
 #       > Main section of code
