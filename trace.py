@@ -56,6 +56,7 @@ def trace(ip):
         send_socket.sendto(bytearray(t), (dest_addr, port))         # Send packets
 
         try:
+            recv_socket.sendto("Hello!" + "\r\n", (ip, port))
             _, curr_addr = recv_socket.recvfrom(512)                # Wait for reponce
             addrPos = str(curr_addr[0])
 
@@ -151,12 +152,12 @@ def geo(ip, ips):
         for i in xrange(ttlMarker, setTTL):
             try:
                 knownNodes = [y[1] for y in nodes].index(ttlMarker)
-                description += str((nodes[knownNodes])[1]) + " : " + str((nodes[knownNodes])[0]) + "\n"
+                description += "#" + str((nodes[knownNodes])[1]) + " : " + str((nodes[knownNodes])[0]) + "\n"
                 nodes.remove(nodes[knownNodes])
             except:
                 try:
                     unknownNodes = [y[1] for y in nullNodes].index(ttlMarker)
-                    description += str((nullNodes[unknownNodes])[1]) + " : " + str((nullNodes[unknownNodes])[0]) + "\n"
+                    description += "#" + str((nullNodes[unknownNodes])[1]) + " : " + str((nullNodes[unknownNodes])[0]) + "\n"
                     nullNodes.remove(nullNodes[unknownNodes])
                 except:
                     description += str(ttlMarker)+" : Error with Node Finder\n"
@@ -218,6 +219,8 @@ def saveFile(ip=None):
 
     print("[...] Find KML at: "+file)
 
+    execFile(file)
+
 #######################################################################################
 #   > Checks the IP to make sure its a real IP or 
 #       checker(ip)
@@ -256,6 +259,29 @@ def error(id):      # error list
         print("[***] Error has occured, ID = " + str(id))
         print("")
         sys.exit(1)
+
+
+#######################################################################################
+#       > Find OS and program to run
+#               execFile(file)
+#######################################################################################
+def execFile(fileKML):
+    if sys.platform == "linux2":
+        if os.path.isfile("/usr/bin/marble"):
+            os.system("/usr/bin/marble "+fileKML+" 2> /dev/null")
+        else:
+            print("[***] Program not found...")
+
+    elif sys.platform == "win32":
+        exe = "C:\\Program Files\\Marble 0.8.0\\marble.exe "
+        if os.path.isfile(exe):
+            os.system(exe + fileKML)
+        else:
+            print("[***] Program not found...")
+    elif sys.platform == "darwin":
+        print("[***] System not supported...")
+    else:
+        print("[***] Unknown OS")
 
 #######################################################################################
 #       > Main section of code
